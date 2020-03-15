@@ -1,7 +1,7 @@
 package client;
 
 /**
- * 调用端发送的请求实体类
+ * 调用端发送的请求实体类，保存了请求返回的结果
  */
 public class RequestEntity {
     private String requestId;

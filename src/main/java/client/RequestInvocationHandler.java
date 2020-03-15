@@ -25,10 +25,11 @@ public class RequestInvocationHandler implements InvocationHandler {
 
         // 声明本次请求的对象锁
         Center.requestLock.put(requestEntity.getRequestId(), requestEntity);
-        Request.send(requestEntity);
+        // send方法中使用了wait方法，请求发出后会阻塞，等待请求结果result写入request中
+        Request.getInstance().send(requestEntity);
         // 调用结束，移除本次请求的对象锁
         Center.requestLock.remove(requestEntity.getRequestId());
-
+        // 返回调用结果
         return requestEntity.getResult();
     }
 
