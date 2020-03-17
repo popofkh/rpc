@@ -11,25 +11,29 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
+import io.netty.util.CharsetUtil;
 import utils.Utils;
 
 import java.net.ConnectException;
 import java.nio.file.attribute.AclFileAttributeView;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * 创建客户端连接，获取netty-client的sendingcontext
+ */
 public class Request {
 
     /**
      * 用于发送消息的ChannelHandlerContext
      */
-    public static ChannelHandlerContext sendingcontext = null;
+    public static ChannelHandlerContext sendingContext = null;
     /**
      * 用于发送请求的NettyClient实例
      */
     private static Request instance = null;
 
-
     private Request() {
+
         // netty线程租
         EventLoopGroup group = new NioEventLoopGroup();
         Bootstrap bootstrap = new Bootstrap();
@@ -47,13 +51,16 @@ public class Request {
                 });
         try {
             ChannelFuture future = bootstrap.connect("localhost", 8888).sync();
-            future.addListener(ChannelFutureListener.CLOSE);
+            future.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                    System.out.println("connect completed...");
+                }
+            });
         } catch (InterruptedException e) {
             e.printStackTrace();
-        } catch (Exception e) {
+        } catch(Exception e) {
             e.printStackTrace();
-        } finally {
-            group.shutdownGracefully();
         }
     }
 
@@ -76,25 +83,23 @@ public class Request {
         try {
             // 等待连接建立
             synchronized (Center.connectLock) {
-                while (sendingcontext == null) {
+                while (Request.sendingContext == null) {
                     Center.connectLock.wait();
                 }
             }
             String requestJson = Utils.requestEncode(requestEntity);
-            ByteBuf requsetBuf = Unpooled.copiedBuffer(requestJson.getBytes());
-            sendingcontext.writeAndFlush(requsetBuf);
-            System.out.println("请求" + requestEntity.getRequestId() + "已发送。。。");
+            ByteBuf requsetBuf = Unpooled.copiedBuffer(requestJson, CharsetUtil.UTF_8);
+            sendingContext.writeAndFlush(requsetBuf);
+            System.out.println("sending request: " + requestJson);
 
             // 等待请求返回的result写入request中，释放对象锁
             synchronized (requestEntity) {
                 requestEntity.wait();
             }
-
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        System.out.println();
     }
 }

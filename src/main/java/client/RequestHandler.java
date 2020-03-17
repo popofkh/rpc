@@ -1,8 +1,10 @@
 package client;
 
 import center.Center;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.CharsetUtil;
 import server.ResponseEntity;
 import utils.Utils;
 
@@ -14,8 +16,8 @@ public class RequestHandler extends ChannelInboundHandlerAdapter {
      * @throws Exception
      */
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception{
-        Request.sendingcontext = ctx;
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        Request.sendingContext = ctx;
         // 唤醒等待连接建立的线程，使其可以进行send发送消息操作
         synchronized (Center.connectLock) {
             Center.connectLock.notifyAll();
@@ -31,6 +33,7 @@ public class RequestHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         String responseJson = (String) msg;
+        System.out.println("receiveing..." + responseJson);
         ResponseEntity responseEntity = (ResponseEntity) Utils.responseDecode(responseJson);
         // 将处理结果放入requestLock对应的request中，并唤醒等待结果的client
         synchronized (Center.requestLock.get(responseEntity.getRequestId())) {

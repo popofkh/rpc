@@ -2,8 +2,11 @@ package center;
 
 import client.RequestEntity;
 import client.RequestInvocationHandler;
+import server.Response;
+import server.ServerConfig;
 
 import java.lang.reflect.Proxy;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -27,9 +30,24 @@ public class Center {
      */
     public static ReentrantLock connectLock = new ReentrantLock();
 
+    /**
+     * 客户端启动入口，获取远程代理对象
+     * @param cls 目标服务的Class对象
+     * @return 目标服务的代理对象
+     */
     public static Object getService(Class cls) {
         RequestInvocationHandler handler = new RequestInvocationHandler();
         Object service = Proxy.newProxyInstance(cls.getClassLoader(), new Class<?>[]{cls}, handler);
         return service;
+    }
+
+    /**
+     * 服务端启动入口，注册服务，等待客户端连接
+     */
+    public static void register() {
+        HashMap<String, String> serviceNameToImpl = new HashMap<>();
+        serviceNameToImpl.put("HelloService", "HelloServiceImpl");
+        ServerConfig serverConfig = new ServerConfig("localhost", 8888, serviceNameToImpl);
+        new Response(serverConfig).start();
     }
 }
