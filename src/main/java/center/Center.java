@@ -1,7 +1,10 @@
 package center;
 
+import client.ClientConfig;
 import client.RequestEntity;
 import client.RequestInvocationHandler;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import server.Response;
 import server.ServerConfig;
 
@@ -13,6 +16,17 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Center {
+
+    /**
+     * 客户端Spring容器上下文，用来获取ClientConfig配置
+     */
+    public static ApplicationContext clientContext;
+
+    /**
+     * 服务端Spring容器上下文，用来获取ServerConfig配置
+     */
+    public static ApplicationContext serverContext;
+
     /**
      * 全局调用次数
      */
@@ -45,9 +59,22 @@ public class Center {
      * 服务端启动入口，注册服务，等待客户端连接
      */
     public static void register() {
-        HashMap<String, String> serviceNameToImpl = new HashMap<>();
-        serviceNameToImpl.put("HelloService", "HelloServiceImpl");
-        ServerConfig serverConfig = new ServerConfig("localhost", 8888, serviceNameToImpl);
-        new Response(serverConfig).start();
+        Response.start();
+    }
+
+    /**
+     * 从客户端Spring容器上下文中获取客户端配置
+     * @return
+     */
+    public static ClientConfig getClientConfig() {
+        return clientContext.getBean(ClientConfig.class);
+    }
+
+    /**
+     * 从服务端Spring容器上下文中获取服务端配置
+     * @return
+     */
+    public static ServerConfig getServerConfig() {
+        return serverContext.getBean(ServerConfig.class);
     }
 }

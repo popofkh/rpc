@@ -18,13 +18,15 @@ import java.net.ConnectException;
 import java.nio.file.attribute.AclFileAttributeView;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static center.Center.clientContext;
+
 /**
  * 创建客户端连接，获取netty-client的sendingcontext
  */
 public class Request {
 
     /**
-     * 用于发送消息的ChannelHandlerContext
+     * 用于发送消息的ChannelHandlerContext，从RequestHandler中获取
      */
     public static ChannelHandlerContext sendingContext = null;
     /**
@@ -50,7 +52,7 @@ public class Request {
                     }
                 });
         try {
-            ChannelFuture future = bootstrap.connect("localhost", 8888).sync();
+            ChannelFuture future = bootstrap.connect(Center.getClientConfig().getHost(), Center.getClientConfig().getPort()).sync();
             future.addListener(new ChannelFutureListener() {
                 @Override
                 public void operationComplete(ChannelFuture channelFuture) throws Exception {

@@ -1,5 +1,6 @@
 package server;
 
+import center.Center;
 import client.RequestEntity;
 
 import java.lang.reflect.InvocationTargetException;
@@ -10,7 +11,7 @@ public class InvokeService {
     public static Object invoke(RequestEntity requestEntity) {
         // 获取请求服务的实现类名、请求方法名、请求参数、参数类型
         String serviceName = requestEntity.getServiceName();
-        String serviceImplName = Response.serverConfig.getServiceNameToImpl().get(serviceName);
+        String serviceImplName = Center.getServerConfig().getServiceNameToImpl().get(serviceName);
         System.out.println("serviceImplName: " + serviceImplName);
         String methodName = requestEntity.getMethodName();
         Object[] parameters = requestEntity.getParameters();
