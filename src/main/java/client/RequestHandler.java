@@ -1,12 +1,10 @@
 package client;
 
 import center.Center;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.util.CharsetUtil;
 import server.ResponseEntity;
-import utils.Utils;
+import utils.JsonUtil;
 
 public class RequestHandler extends ChannelInboundHandlerAdapter {
 
@@ -34,7 +32,7 @@ public class RequestHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         String responseJson = (String) msg;
         System.out.println("receiveing..." + responseJson);
-        ResponseEntity responseEntity = (ResponseEntity) Utils.responseDecode(responseJson);
+        ResponseEntity responseEntity = (ResponseEntity) JsonUtil.responseDecode(responseJson);
         // 将处理结果放入requestLock对应的request中，并唤醒等待结果的client
         synchronized (Center.requestLock.get(responseEntity.getRequestId())) {
             RequestEntity requestEntity = Center.requestLock.get(responseEntity.getRequestId());

@@ -3,10 +3,13 @@ package center;
 import client.ClientConfig;
 import client.RequestEntity;
 import client.RequestInvocationHandler;
+import org.apache.zookeeper.KeeperException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import server.Response;
 import server.ServerConfig;
+import utils.ZkClient;
+import utils.ZkUtil;
 
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
@@ -59,6 +62,21 @@ public class Center {
      * 服务端启动入口，注册服务，等待客户端连接
      */
     public static void register() {
+        // 创建服务端的zookeeper-client
+        ZkClient client = new ZkClient(Center.getServerConfig().getZooKeeperAddr());
+
+        try {
+            // 初始化服务端对应的节点：/RPC/SERVICE/HelloService/PROVIDERS
+            ZkUtil.initServerZnode(client);
+            // 初始化服务addr节点：/RPC/SERVICE/HelloService/PROVIDERS/localhost:8888
+            ZkUtil.registerService(client);
+
+        } catch (KeeperException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        // 启动netty-server
         Response.start();
     }
 

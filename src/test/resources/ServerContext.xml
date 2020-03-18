@@ -5,6 +5,7 @@
     <bean class="server.ServerConfig">
         <property name="host" value="localhost"></property>
         <property name="port" value="8888"></property>
+        <property name="zooKeeperAddr" value="localhost:2181"></property>
         <property name="serviceNameToImpl">
             <map>
                 <entry key="HelloService" value="HelloServiceImpl"></entry>

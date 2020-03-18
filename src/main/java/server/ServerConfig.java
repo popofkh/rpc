@@ -21,6 +21,11 @@ public class ServerConfig implements ApplicationContextAware {
     private int port;
 
     /**
+     * zookeeper服务地址
+     */
+    private String zooKeeperAddr;
+
+    /**
      * 服务端接口名到实现类名的映射，用于反射调用
      */
     private Map<String, String> serviceNameToImpl = new HashMap<>();
@@ -51,6 +56,14 @@ public class ServerConfig implements ApplicationContextAware {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public String getZooKeeperAddr() {
+        return zooKeeperAddr;
+    }
+
+    public void setZooKeeperAddr(String zooKeeperAddr) {
+        this.zooKeeperAddr = zooKeeperAddr;
     }
 
     public Map<String, String> getServiceNameToImpl() {

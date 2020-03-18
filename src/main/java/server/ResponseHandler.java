@@ -8,7 +8,7 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.CharsetUtil;
-import utils.Utils;
+import utils.JsonUtil;
 
 public class ResponseHandler extends ChannelInboundHandlerAdapter {
 
@@ -16,7 +16,7 @@ public class ResponseHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         String requestJson = (String) msg;
         System.out.println(msg);
-        RequestEntity requestEntity = Utils.requestDecode(requestJson);
+        RequestEntity requestEntity = JsonUtil.requestDecode(requestJson);
         // 执行目标方法，构造响应体
         Object result = InvokeService.invoke(requestEntity);
 
@@ -25,7 +25,7 @@ public class ResponseHandler extends ChannelInboundHandlerAdapter {
         responseEntity.setResult(result);
 
         // 响应体编码，发送给调用方
-        String responseJson = Utils.responseEncode(responseEntity);
+        String responseJson = JsonUtil.responseEncode(responseEntity);
         ByteBuf responseBuf = Unpooled.copiedBuffer(responseJson, CharsetUtil.UTF_8);
         System.out.println("responseJson: " + responseJson);
         ctx.writeAndFlush(responseBuf);

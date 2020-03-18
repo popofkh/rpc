@@ -7,7 +7,7 @@ import server.ResponseEntity;
 
 import java.io.IOException;
 
-public class Utils {
+public class JsonUtil {
     private static ObjectMapper objectMapper = new ObjectMapper();
 
     /**

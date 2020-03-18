@@ -12,13 +12,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.util.CharsetUtil;
-import utils.Utils;
-
-import java.net.ConnectException;
-import java.nio.file.attribute.AclFileAttributeView;
-import java.util.concurrent.locks.ReentrantLock;
-
-import static center.Center.clientContext;
+import utils.JsonUtil;
 
 /**
  * 创建客户端连接，获取netty-client的sendingcontext
@@ -52,7 +46,7 @@ public class Request {
                     }
                 });
         try {
-            ChannelFuture future = bootstrap.connect(Center.getClientConfig().getHost(), Center.getClientConfig().getPort()).sync();
+            ChannelFuture future = bootstrap.connect("", 8888).sync();
             future.addListener(new ChannelFutureListener() {
                 @Override
                 public void operationComplete(ChannelFuture channelFuture) throws Exception {
@@ -89,7 +83,7 @@ public class Request {
                     Center.connectLock.wait();
                 }
             }
-            String requestJson = Utils.requestEncode(requestEntity);
+            String requestJson = JsonUtil.requestEncode(requestEntity);
             ByteBuf requsetBuf = Unpooled.copiedBuffer(requestJson, CharsetUtil.UTF_8);
             sendingContext.writeAndFlush(requsetBuf);
             System.out.println("sending request: " + requestJson);
