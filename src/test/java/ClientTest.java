@@ -15,7 +15,11 @@ public class ClientTest {
         ApplicationContext context = new ClassPathXmlApplicationContext("ClientContext.xml");
 
         HelloService helloService = (HelloService) Center.getService(HelloService.class);
-        String response = helloService.sayHello("fangkanghua");
-        System.out.println(response);
+        String helloResponse = helloService.sayHello("fangkanghua");
+        System.out.println(helloResponse);
+
+        HiService hiService = (HiService) Center.getService(HiService.class);
+        String hiResponse = hiService.sayHi("fkh");
+        System.out.println(hiResponse);
     }
 }

@@ -1,4 +1,4 @@
 public interface HelloService {
 
-    String sayHello(String msg);
+    String sayHello(String name);
 }

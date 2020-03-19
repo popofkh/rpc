@@ -5,6 +5,7 @@ import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 
@@ -80,5 +81,18 @@ public class ZkClient {
     public Stat znodeExists(String path) throws KeeperException, InterruptedException {
         // 这里watch需要用true吗？
         return zooKeeper.exists(path, false);
+    }
+
+    /**
+     * 获取节点的子节点，同时注册Watcher回调方法
+     * @param path 节点路径
+     * @param watcher 目标节点的监听Watcher
+     * @return
+     * @throws KeeperException
+     * @throws InterruptedException
+     */
+    public List<String> getZnodeChildren(String path, Watcher watcher) throws KeeperException, InterruptedException {
+        List<String> children = zooKeeper.getChildren(path, watcher);
+        return children;
     }
 }

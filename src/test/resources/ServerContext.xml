@@ -9,6 +9,7 @@
         <property name="serviceNameToImpl">
             <map>
                 <entry key="HelloService" value="HelloServiceImpl"></entry>
+                <entry key="HiService" value="HiServiceImpl"></entry>
             </map>
         </property>
     </bean>

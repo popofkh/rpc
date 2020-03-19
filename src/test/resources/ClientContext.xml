@@ -7,11 +7,13 @@
 <!--        <property name="port" value="8888"></property>-->
         <property name="zooKeeperAddr" value="localhost:2181"></property>
         <property name="timeout" value="2000"></property>
-        <property name="serviceName">
+        <property name="serviceNames">
             <set>
                 <value>HelloService</value>
+                <value>HiService</value>
             </set>
         </property>
-        <property name="loadBalance" value="minConnectBalance"></property>
+        <property name="loadBalance" ref="random"></property>
     </bean>
+    <bean id="random" class="loadBalance.RandomBalance" scope="prototype"></bean>
 </beans>

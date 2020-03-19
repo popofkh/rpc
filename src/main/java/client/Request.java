@@ -28,36 +28,50 @@ public class Request {
      */
     private static Request instance = null;
 
-    private Request() {
+    private Request() {}
 
-        // netty线程租
-        EventLoopGroup group = new NioEventLoopGroup();
-        Bootstrap bootstrap = new Bootstrap();
-        bootstrap.group(group)
-                .channel(NioSocketChannel.class)
-                // 禁用nagle算法
-                .option(ChannelOption.TCP_NODELAY, true)
-                .handler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel socketChannel) throws Exception {
-                        socketChannel.pipeline().addLast(new LineBasedFrameDecoder(2048));
-                        socketChannel.pipeline().addLast(new StringDecoder());
-                        socketChannel.pipeline().addLast(new RequestHandler());
-                    }
-                });
-        try {
-            ChannelFuture future = bootstrap.connect("", 8888).sync();
-            future.addListener(new ChannelFutureListener() {
-                @Override
-                public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                    System.out.println("connect completed...");
+    /**
+     * 使用Double check保证不重复对同一个IP创建连接
+     * @param addr
+     * @return
+     */
+    private Channel getServiceChannel(String addr) {
+        if(Center.IPChannelMap.get(addr).getChannel() == null) {
+            synchronized (Center.IPChannelMap.get(addr)) {
+                // netty线程租
+                EventLoopGroup group = new NioEventLoopGroup();
+                Bootstrap bootstrap = new Bootstrap();
+                bootstrap.group(group)
+                        .channel(NioSocketChannel.class)
+                        // 禁用nagle算法
+                        .option(ChannelOption.TCP_NODELAY, true)
+                        .handler(new ChannelInitializer<SocketChannel>() {
+                            @Override
+                            protected void initChannel(SocketChannel socketChannel) throws Exception {
+                                socketChannel.pipeline().addLast(new LineBasedFrameDecoder(2048));
+                                socketChannel.pipeline().addLast(new StringDecoder());
+                                socketChannel.pipeline().addLast(new RequestHandler());
+                            }
+                        });
+                try {
+                    ChannelFuture future = bootstrap.connect(addr.split(":")[0], Integer.parseInt(addr.split(":")[1])).sync();
+                    future.addListener(new ChannelFutureListener() {
+                        @Override
+                        public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                            System.out.println("connect server " + addr + " completed...");
+                        }
+                    });
+                    // 缓存channel
+                    Center.IPChannelMap.get(addr).setChannel(future.channel());
+                    Center.IPChannelMap.get(addr).setGroup(group);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            });
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch(Exception e) {
-            e.printStackTrace();
+            }
         }
+        return Center.IPChannelMap.get(addr).getChannel();
     }
 
     /**
@@ -76,6 +90,10 @@ public class Request {
     }
 
     public void send(RequestEntity requestEntity) {
+        // 根据负载均衡策略确定服务端地址
+        String serviceName = requestEntity.getServiceName();
+        String serviceAddr = Center.loadBalance.chooseAddr(serviceName);
+        Channel channel = getServiceChannel(serviceAddr);
         try {
             // 等待连接建立
             synchronized (Center.connectLock) {

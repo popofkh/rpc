@@ -1,9 +1,11 @@
 package utils;
 
 import center.Center;
+import loadBalance.IpWatcher;
 import org.apache.zookeeper.KeeperException;
 
 import javax.print.DocFlavor;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,7 +25,7 @@ public class ZkUtil {
         client.createZnode(servicePath, null);
 
         // 获取配置文件中所有的服务名称，为每个服务创建节点
-        Set<String> serviceNames = Center.getClientConfig().getServiceName();
+        Set<String> serviceNames = Center.getClientConfig().getServiceNames();
         for (String serviceName : serviceNames) {
             client.createZnode(servicePath + "/" + serviceName, null);
             client.createZnode(servicePath + "/" + serviceName + ZkConst.CONSUMERS_PATH, null);
@@ -71,5 +73,15 @@ public class ZkUtil {
             client.createTempZnode(ZkConst.ROOT_PATH + ZkConst.SERVICE_PATH +
                     "/" + service.getKey() + ZkConst.PROVIDERS_PATH + "/" + serverAddr, null);
         }
+    }
+
+    /**
+     * 获取特定服务的所有提供者ip
+     * @param client
+     */
+    public static List<String> getServiceIps(ZkClient client, String serviceName) throws KeeperException, InterruptedException {
+        IpWatcher ipWatcher = new IpWatcher(client);
+        return client.getZnodeChildren(ZkConst.ROOT_PATH + ZkConst.SERVICE_PATH +
+                "/" + serviceName + ZkConst.PROVIDERS_PATH, ipWatcher);
     }
 }
