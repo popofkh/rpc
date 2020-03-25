@@ -57,7 +57,7 @@ public class Center {
     public static Map<String, ReadWriteLock> serviceLockMap = new ConcurrentHashMap<>();
 
     /**
-     * 服务名称到服务信息的映射
+     * 服务名称到服务详细信息（）的映射
      */
     public static Map<String, ServiceInfo> serviceNameInfoMap = new ConcurrentHashMap<>();
 

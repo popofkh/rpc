@@ -17,6 +17,7 @@ public class ResponseHandler extends ChannelInboundHandlerAdapter {
         String requestJson = (String) msg;
         System.out.println(msg);
         RequestEntity requestEntity = JsonUtil.requestDecode(requestJson);
+
         // 执行目标方法，构造响应体
         Object result = InvokeService.invoke(requestEntity);
 
@@ -43,7 +44,7 @@ public class ResponseHandler extends ChannelInboundHandlerAdapter {
         future.channel().closeFuture().addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                System.out.println("远程主机关闭了一个连接");
+                System.out.println("");
             }
         });
     }

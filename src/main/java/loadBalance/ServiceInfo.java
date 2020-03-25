@@ -7,18 +7,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by wephone on 18-1-8.
- * 每个服务对应的信息存放类
- * 用在一个key为服务名字的serviceNameInfoMap里
+ * 每个服务对应详细信息
  */
 public class ServiceInfo {
 
     //用于轮询负载均衡策略
-    private AtomicInteger index=new AtomicInteger(0);
+    private AtomicInteger index = new AtomicInteger(0);
     //这个服务所连接的提供者IP Set 只能由负载均衡类操作
-    private Set<String> serviceIPSet=new HashSet<>();
+    private Set<String> serviceIPSet = new HashSet<>();
 
 
-//    public void setServiceIPSet(Set<String> serviceIPSet) {
     public void setServiceIPSet(List<String> newIPSet) {
         Set<String> set=new HashSet<>();
         set.addAll(newIPSet);

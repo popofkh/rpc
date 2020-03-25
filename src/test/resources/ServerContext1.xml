@@ -2,15 +2,15 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-    <!--  注册HelloService和HiServer服务，端口为8888  -->
+    <!--  注册HelloService和NoneService，端口为8889  -->
     <bean class="server.ServerConfig">
         <property name="host" value="localhost"></property>
-        <property name="port" value="8888"></property>
+        <property name="port" value="8889"></property>
         <property name="zooKeeperAddr" value="localhost:2181"></property>
         <property name="serviceNameToImpl">
             <map>
                 <entry key="HelloService" value="HelloServiceImpl"></entry>
-                <entry key="HiService" value="HiServiceImpl"></entry>
+                <entry key="NoneService" value="NoneServiceImpl"></entry>
             </map>
         </property>
     </bean>

@@ -1,6 +1,8 @@
 import center.Center;
+import exception.ServiceNotFoundException;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ClientTest {
@@ -19,7 +21,15 @@ public class ClientTest {
         System.out.println(helloResponse);
 
         HiService hiService = (HiService) Center.getService(HiService.class);
-        String hiResponse = hiService.sayHi("fkh");
+        String hiResponse = hiService.sayHi("fangkanghua");
         System.out.println(hiResponse);
+
+        try {
+            NoneService noneService = (NoneService) Center.getService(NoneService.class);
+            String noneResponse = noneService.sayNone("fangkanghua");
+            System.out.println(noneResponse);
+        } catch (ServiceNotFoundException e) {
+            System.out.println("Service not found...");
+        }
     }
 }

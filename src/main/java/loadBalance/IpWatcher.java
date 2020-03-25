@@ -32,11 +32,12 @@ public class IpWatcher implements Watcher {
         String serviceName = path.split("/")[3];
         // 写IP操作
         Center.serviceLockMap.get(serviceName).writeLock().lock();
-        System.out.println("providers changed... Lock write lock...");
+        System.out.println("Providers changed... Lock write lock...");
 
         try {
             // 缓存目标服务的所有ip
             List<String> ips = client.getZnodeChildren(path, this);
+            System.out.println(ips.size());
             for (String ip : ips) {
                 Center.IPChannelMap.putIfAbsent(ip, new IPChannelInfo());
             }
@@ -48,5 +49,6 @@ public class IpWatcher implements Watcher {
 
         // 释放写锁
         Center.serviceLockMap.get(serviceName).writeLock().unlock();
+        System.out.println("Providers changing committed, unlock write lock...");
     }
 }

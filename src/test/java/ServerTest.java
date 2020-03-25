@@ -1,4 +1,7 @@
 import center.Center;
+import com.sun.security.ntlm.NTLMException;
+import com.sun.security.ntlm.Server;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -11,8 +14,7 @@ public class ServerTest {
      */
     @Test
     public void singleServerTest() {
-        ApplicationContext context = new ClassPathXmlApplicationContext("ServerContext.xml");
-        Center.register();
+        new ServerTest().server();
     }
 
     /**
@@ -20,6 +22,17 @@ public class ServerTest {
      */
     @Test
     public void mutiServerTest() {
-
+        new ServerTest().server();
+        new ServerTest().server1();
     }
+
+    private void server() {
+        ApplicationContext context = new ClassPathXmlApplicationContext("ServerContext.xml");
+        Center.register();
+    }
+    private void server1() {
+        ApplicationContext context = new ClassPathXmlApplicationContext("ServerContext1.xml");
+        Center.register();
+    }
+
 }

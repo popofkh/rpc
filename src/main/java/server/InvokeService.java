@@ -12,7 +12,6 @@ public class InvokeService {
         // 获取请求服务的实现类名、请求方法名、请求参数、参数类型
         String serviceName = requestEntity.getServiceName();
         String serviceImplName = Center.getServerConfig().getServiceNameToImpl().get(serviceName);
-        System.out.println("serviceImplName: " + serviceImplName);
         String methodName = requestEntity.getMethodName();
         Object[] parameters = requestEntity.getParameters();
         Class[] parameterTypes = new Class[parameters.length];
