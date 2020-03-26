@@ -1,10 +1,6 @@
 import center.Center;
-import com.sun.security.ntlm.NTLMException;
-import com.sun.security.ntlm.Server;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ServerTest {
