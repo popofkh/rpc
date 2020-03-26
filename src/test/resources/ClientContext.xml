@@ -16,4 +16,7 @@
         <property name="loadBalance" ref="random"></property>
     </bean>
     <bean id="random" class="loadBalance.RandomBalance" scope="prototype"></bean>
+<!--    <bean id="consistenthash" class="loadBalance.ConsistentHashBalance" scope="prototype">-->
+<!--        <property name="consumerAddr" value="loaclhost:8080"></property>-->
+<!--    </bean>-->
 </beans>

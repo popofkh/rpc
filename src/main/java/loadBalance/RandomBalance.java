@@ -28,4 +28,9 @@ public class RandomBalance implements LoadBalance {
         List<String> ipList = new ArrayList<>(serviceIPSet);
         return ipList.get(new Random().nextInt(serviceIPSet.size()));
     }
+
+    @Override
+    public void changeAddr(String serviceName, List<String> newAddrSet) {
+        Center.serviceNameInfoMap.get(serviceName).setServiceIPSet(newAddrSet);
+    }
 }

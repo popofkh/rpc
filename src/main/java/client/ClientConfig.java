@@ -92,7 +92,7 @@ public class ClientConfig implements ApplicationContextAware {
         // 缓存负载均衡策略
         Center.loadBalance = Center.getClientConfig().getLoadBalance();
 
-        // 容器启动后，缓存服务端注册的服务及对应的ip+port
+        // 容器启动后，缓存服务端服务及对应的ip+port
         try {
             ZkClient client = new ZkClient(Center.getClientConfig().getZooKeeperAddr());
             // 获取客户端配置的服务名称，并获取对应的提供者IP

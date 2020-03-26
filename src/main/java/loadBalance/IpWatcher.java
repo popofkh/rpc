@@ -42,7 +42,7 @@ public class IpWatcher implements Watcher {
                 Center.IPChannelMap.putIfAbsent(ip, new IPChannelInfo());
             }
             // 更新服务ip
-            Center.serviceNameInfoMap.get(serviceName).setServiceIPSet(ips);
+            Center.loadBalance.changeAddr(serviceName, ips);
         } catch (KeeperException | InterruptedException e) {
             e.printStackTrace();
         }

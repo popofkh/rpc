@@ -92,7 +92,9 @@ public class Request {
     public void send(RequestEntity requestEntity) {
         // 根据负载均衡策略确定服务端地址
         String serviceName = requestEntity.getServiceName();
+        // TODO 在loadBalance中配置调用方地址后，才能调用负载均衡策略
         String serviceAddr = Center.loadBalance.chooseAddr(serviceName);
+        System.out.println("=========" + serviceAddr);
         Channel channel = getServiceChannel(serviceAddr);
         try {
             // 等待连接建立
