@@ -15,11 +15,11 @@ public class RequestHandler extends ChannelInboundHandlerAdapter {
      */
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        Request.sendingContext = ctx;
-        // 唤醒等待连接建立的线程，使其可以进行send发送消息操作
-        synchronized (Center.connectLock) {
-            Center.connectLock.notifyAll();
-        }
+//        Request.sendingContext = ctx;
+//        // 唤醒等待连接建立的线程，使其可以进行send发送消息操作
+//        synchronized (Center.connectLock) {
+//            Center.connectLock.notifyAll();
+//        }
     }
 
     /**

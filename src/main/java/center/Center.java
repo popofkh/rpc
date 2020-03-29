@@ -49,10 +49,10 @@ public class Center {
     /**
      * 连接锁，用于同步netty-client连接动作与获取sendingContext动作
      */
-    public static ReentrantLock connectLock = new ReentrantLock();
+//    public static ReentrantLock connectLock = new ReentrantLock();
 
     /**
-     * 全局读写锁，ip变化时为写操作，负载均衡选中IP为读操作
+     * 全局读写锁，changeIp时为写操作，负载均衡chooseIp为读操作
      */
     public static Map<String, ReadWriteLock> serviceLockMap = new ConcurrentHashMap<>();
 
