@@ -2,6 +2,7 @@ package client;
 
 import center.Center;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import exception.ServiceUnavailableException;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -13,6 +14,8 @@ import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.util.CharsetUtil;
 import utils.JsonUtil;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * 创建客户端连接，获取netty-client的sendingcontext
@@ -94,31 +97,37 @@ public class Request {
         return instance;
     }
 
-    // TODO 发送逻辑，要支持多线程发送，以更好地利用Netty的能力
     public void send(RequestEntity requestEntity) {
         // 根据负载均衡策略确定服务端地址
         String serviceName = requestEntity.getServiceName();
         // TODO 在loadBalance中配置调用方地址后，才能调用负载均衡策略
         String serviceAddr = Center.loadBalance.chooseAddr(serviceName);
-        // TODO 这个channel没用起来啊，还在用sendingContext\bhjk g
-        Channel channel = getServiceChannel(serviceAddr);
+
         try {
-            // 等待连接建立
-            // TODO 这里好像没有指定特定IP的连接，这个判断是无效的，应该在Center中维护一个Map，应该是等待特定IP对应的channel连接建立
-//            synchronized (Center.connectLock) {
-//                while (Request.sendingContext == null) {
-//                    Center.connectLock.wait();
-//                }
-//            }
             String requestJson = JsonUtil.requestEncode(requestEntity);
             ByteBuf requsetBuf = Unpooled.copiedBuffer(requestJson, CharsetUtil.UTF_8);
-            channel.writeAndFlush(requsetBuf);
             System.out.println("sending request: " + requestJson);
 
-            // 等待请求返回的result写入request中，释放对象锁
-            synchronized (requestEntity) {
-                requestEntity.wait();
+            // 超时重传
+            int requestCnt = 0;
+            while (requestCnt < 3) {
+                // TODO 等待连接建立，应该在Center中维护一个Map，应该是等待特定IP对应的channel连接建立
+                Channel channel = getServiceChannel(serviceAddr);
+                channel.writeAndFlush(requsetBuf);
+                // TODO 计时器不能每次都启动一个线程，要使用一个常驻线程来完成计时器功能
+                new Thread(new Timer(requestEntity)).start();
+                // 同步代码块，等待请求返回的result写入request中,由于调用wait()后如果没有相应会导致死锁，所以必须有线程主动调用notiify()才能避免死锁
+                synchronized (requestEntity) {
+                    requestEntity.wait();
+                }
+                if (requestEntity.getResult() == null) {
+                    requestCnt++;
+                    channel = getServiceChannel(serviceAddr);
+                    channel.writeAndFlush(requsetBuf);
+                }
+                else break;      // 如果请求成功直接跳出循环，返回结果
             }
+            if(requestCnt == 3) throw new ServiceUnavailableException(serviceName + " unavailable...");
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (JsonProcessingException e) {
