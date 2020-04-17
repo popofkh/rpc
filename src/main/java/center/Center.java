@@ -17,6 +17,7 @@ import utils.ZkUtil;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -69,6 +70,8 @@ public class Center {
      */
     public static LoadBalance loadBalance;
 
+    public static Timer timer = new Timer();
+
     /**
      * 客户端启动入口，获取远程代理对象
      * @param cls 目标服务的Class对象
@@ -116,5 +119,13 @@ public class Center {
      */
     public static ServerConfig getServerConfig() {
         return serverContext.getBean(ServerConfig.class);
+    }
+
+    /**
+     * 获取定时器
+     * @return
+     */
+    public static Timer getTimer() {
+        return timer;
     }
 }
