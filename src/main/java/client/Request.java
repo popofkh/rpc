@@ -13,7 +13,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.util.CharsetUtil;
-import timer.RequestTimer;
+import timer.RequestTimerTask;
 import utils.JsonUtil;
 
 import java.util.Timer;
@@ -117,7 +117,7 @@ public class Request {
                 Channel channel = getServiceChannel(serviceAddr);
                 channel.writeAndFlush(requsetBuf);
                 // 使用java原生Timer实现定时器功能，定时器只执行一次
-                Center.getTimer().schedule(new RequestTimer(requestEntity), Center.getClientConfig().getTimeout());
+                Center.getTimer().schedule(new RequestTimerTask(requestEntity), Center.getClientConfig().getTimeout());
                 // 同步代码块，等待请求返回的result写入request中,由于调用wait()后如果没有相应会导致死锁，所以必须有线程主动调用notiify()才能避免死锁
                 synchronized (requestEntity) {
                     requestEntity.wait();

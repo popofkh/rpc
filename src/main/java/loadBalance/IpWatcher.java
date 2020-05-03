@@ -1,7 +1,7 @@
 package loadBalance;
 
 import center.Center;
-import client.IPChannelInfo;
+import client.ChannelInfo;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
@@ -39,7 +39,8 @@ public class IpWatcher implements Watcher {
             List<String> ips = client.getZnodeChildren(path, this);
             System.out.println(ips.size());
             for (String ip : ips) {
-                Center.IPChannelMap.putIfAbsent(ip, new IPChannelInfo());
+                // 先放一个空的IPChannelInfo进去，真正建立连接时才缓存channel
+                Center.IPChannelMap.putIfAbsent(ip, new ChannelInfo());
             }
             // 更新服务ip
             Center.loadBalance.changeAddr(serviceName, ips);

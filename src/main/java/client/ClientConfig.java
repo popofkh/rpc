@@ -101,7 +101,7 @@ public class ClientConfig implements ApplicationContextAware {
             for (String serviceName : serviceNames){
                 List<String> ips = ZkUtil.getServiceIps(client, serviceName);
                 for (String ip : ips) {
-                    Center.IPChannelMap.putIfAbsent(ip, new IPChannelInfo());
+                    Center.IPChannelMap.putIfAbsent(ip, new ChannelInfo());
                 }
                 ServiceInfo serviceInfo=new ServiceInfo();
                 serviceInfo.setServiceIPSet(ips);

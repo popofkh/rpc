@@ -17,6 +17,10 @@ public class ResponseHandler extends ChannelInboundHandlerAdapter {
         String requestJson = (String) msg;
         System.out.println(msg);
         RequestEntity requestEntity = JsonUtil.requestDecode(requestJson);
+        // 检查是否是心跳包
+        if(requestEntity.getLiveness()) {
+
+        }
 
         // 执行目标方法，构造响应体
         Object result = InvokeService.invoke(requestEntity);

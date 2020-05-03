@@ -4,10 +4,10 @@ import client.RequestEntity;
 
 import java.util.TimerTask;
 
-public class RequestTimer extends TimerTask {
+public class RequestTimerTask extends TimerTask {
     private final RequestEntity entity;
 
-    public RequestTimer(RequestEntity entity) {
+    public RequestTimerTask(RequestEntity entity) {
         this.entity = entity;
     }
 

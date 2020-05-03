@@ -9,6 +9,7 @@ public class RequestEntity {
     private String methodName;
     private Object[] parameters;
     private Object result;
+    private boolean liveness;
 
     public Object getResult() {
         return result;
@@ -48,5 +49,13 @@ public class RequestEntity {
 
     public void setParameters(Object[] parameters) {
         this.parameters = parameters;
+    }
+
+    public boolean getLiveness() {
+        return liveness;
+    }
+
+    public void setLiveness(boolean liveness) {
+        this.liveness = liveness;
     }
 }

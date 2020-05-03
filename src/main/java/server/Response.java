@@ -17,7 +17,7 @@ import io.netty.handler.codec.string.StringDecoder;
 public class Response {
 
     public static void start() {
-        NioEventLoopGroup boss = new NioEventLoopGroup();
+        NioEventLoopGroup boss = new NioEventLoopGroup(1);
         NioEventLoopGroup worker = new NioEventLoopGroup();
 
         ServerBootstrap bootstrap = new ServerBootstrap();
@@ -36,7 +36,7 @@ public class Response {
         try {
             // 服务端绑定端口，监听客户端连接
             ChannelFuture future = bootstrap.bind(Center.getServerConfig().getHost(), Center.getServerConfig().getPort()).sync();
-            // 阻塞服务端线程，知道监听端口关闭
+            // 阻塞服务端线程，直到监听端口关闭
             future.channel().closeFuture().sync();
             System.out.println("server closed...");
         } catch (InterruptedException e) {

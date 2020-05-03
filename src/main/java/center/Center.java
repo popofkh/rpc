@@ -1,27 +1,24 @@
 package center;
 
 import client.ClientConfig;
-import client.IPChannelInfo;
+import client.ChannelInfo;
 import client.RequestEntity;
 import client.RequestInvocationHandler;
 import loadBalance.LoadBalance;
 import loadBalance.ServiceInfo;
 import org.apache.zookeeper.KeeperException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import server.Response;
 import server.ServerConfig;
 import utils.ZkClient;
 import utils.ZkUtil;
 
 import java.lang.reflect.Proxy;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class Center {
 
@@ -63,7 +60,13 @@ public class Center {
     public static Map<String, ServiceInfo> serviceNameInfoMap = new ConcurrentHashMap<>();
 
     //IP地址 映射 对应的NIO Channel及其引用次数
-    public static Map<String, IPChannelInfo> IPChannelMap = new ConcurrentHashMap<>();
+    public static Map<String, ChannelInfo> IPChannelMap = new ConcurrentHashMap<>();
+    // 健康连接
+    public static Map<String, ChannelInfo> healthyChannel = new ConcurrentHashMap<>();
+    // 亚健康连接
+    public static Map<String, ChannelInfo> subhealthyChannel = new ConcurrentHashMap<>();
+    // 非健康连接
+    public static Map<String, ChannelInfo> unhealthyChannel = new ConcurrentHashMap<>();
 
     /**
      * 保存客户端配置的负载均衡策略

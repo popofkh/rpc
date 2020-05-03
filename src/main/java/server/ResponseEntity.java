@@ -9,6 +9,8 @@ public class ResponseEntity {
     private String requestId;
     // 处理结果
     private Object result;
+    // 心跳包标记
+    private boolean liveness;
 
     public String getRequestId() {
         return requestId;
