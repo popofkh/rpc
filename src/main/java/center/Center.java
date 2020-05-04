@@ -59,6 +59,8 @@ public class Center {
      */
     public static Map<String, ServiceInfo> serviceNameInfoMap = new ConcurrentHashMap<>();
 
+    // 心跳包周期
+    public static int internalSecond = 15;
     //IP地址 映射 对应的NIO Channel及其引用次数
     public static Map<String, ChannelInfo> IPChannelMap = new ConcurrentHashMap<>();
     // 健康连接

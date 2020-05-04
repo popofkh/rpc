@@ -11,6 +11,8 @@ public class ResponseEntity {
     private Object result;
     // 心跳包标记
     private boolean liveness;
+    // 服务地址
+    private String addr;
 
     public String getRequestId() {
         return requestId;
@@ -26,5 +28,21 @@ public class ResponseEntity {
 
     public void setResult(Object result) {
         this.result = result;
+    }
+
+    public boolean getLiveness() {
+        return liveness;
+    }
+
+    public void setLiveness(boolean liveness) {
+        this.liveness = liveness;
+    }
+
+    public String getAddr() {
+        return addr;
+    }
+
+    public void setAddr(String addr) {
+        this.addr = addr;
     }
 }

@@ -1,6 +1,8 @@
 package server;
 
+import center.Center;
 import client.RequestEntity;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
@@ -12,6 +14,20 @@ import utils.JsonUtil;
 
 public class ResponseHandler extends ChannelInboundHandlerAdapter {
 
+    private ByteBuf buildHeartbeat() {
+        ResponseEntity heartbeat = new ResponseEntity();
+        heartbeat.setLiveness(true);
+        heartbeat.setAddr(Center.getServerConfig().getHost() + ":" + Center.getServerConfig().getPort());
+        String responseJson = null;
+        try {
+            responseJson = JsonUtil.responseEncode(heartbeat);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        ByteBuf responseBuf = Unpooled.copiedBuffer(responseJson, CharsetUtil.UTF_8);
+        return responseBuf;
+    }
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         String requestJson = (String) msg;
@@ -19,7 +35,9 @@ public class ResponseHandler extends ChannelInboundHandlerAdapter {
         RequestEntity requestEntity = JsonUtil.requestDecode(requestJson);
         // 检查是否是心跳包
         if(requestEntity.getLiveness()) {
-
+            ByteBuf byteBuf = buildHeartbeat();
+            ctx.writeAndFlush(requestEntity);
+            return;
         }
 
         // 执行目标方法，构造响应体

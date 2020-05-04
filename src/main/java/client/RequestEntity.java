@@ -10,6 +10,7 @@ public class RequestEntity {
     private Object[] parameters;
     private Object result;
     private boolean liveness;
+    private String addr;    // 心跳包对应的channel远端地址
 
     public Object getResult() {
         return result;

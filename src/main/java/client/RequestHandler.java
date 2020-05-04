@@ -33,11 +33,42 @@ public class RequestHandler extends ChannelInboundHandlerAdapter {
         String responseJson = (String) msg;
         System.out.println("receiveing..." + responseJson);
         ResponseEntity responseEntity = (ResponseEntity) JsonUtil.responseDecode(responseJson);
+        // 处理心跳包
+        if(responseEntity.getLiveness()) {
+            dealHeartbeat(responseEntity);
+        }
         // 将处理结果放入requestLock对应的request中，并唤醒等待结果的client
         synchronized (Center.requestLock.get(responseEntity.getRequestId())) {
             RequestEntity requestEntity = Center.requestLock.get(responseEntity.getRequestId());
             requestEntity.setResult(responseEntity.getResult());
             requestEntity.notifyAll();
+        }
+    }
+
+    /**
+     * 处理心跳响应包,更新最近心跳时间和连续响应心跳次数
+     * @param responseEntity
+     */
+    private void dealHeartbeat(ResponseEntity responseEntity) {
+        String addr = responseEntity.getAddr();
+        if(Center.healthyChannel.containsKey(addr)) {
+            if(System.currentTimeMillis() - Center.healthyChannel.get(addr).getLastUpdateTime() < 3 + Center.internalSecond) {
+                Center.healthyChannel.get(addr).increaseCount();
+            }
+            else {
+                Center.subhealthyChannel.get(addr).clearCount();
+            }
+            Center.healthyChannel.get(addr).setLastUpdateTime(System.currentTimeMillis());
+            return;
+        }
+        if(Center.subhealthyChannel.containsKey(addr)) {
+            if(System.currentTimeMillis() - Center.healthyChannel.get(addr).getLastUpdateTime() < 3 + Center.internalSecond) {
+                Center.subhealthyChannel.get(addr).increaseCount();
+            }
+            else {
+                Center.subhealthyChannel.get(addr).clearCount();
+            }
+            Center.subhealthyChannel.get(addr).setLastUpdateTime(System.currentTimeMillis());
         }
     }
 

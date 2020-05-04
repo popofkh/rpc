@@ -13,6 +13,7 @@ public class ChannelInfo {
     private EventLoopGroup group;
     private Channel channel;
     private long lastUpdateTime;        // 最后一次生命检测的时间
+    private long count;                 // 连续count次响应心跳包
 
 //    //保证多线程修改时引用计数正确
 //    private AtomicInteger serviceQuoteNum=new AtomicInteger(0);//原子变量要赋初值
@@ -33,4 +34,23 @@ public class ChannelInfo {
         this.channel = channel;
     }
 
+    public long getLastUpdateTime() {
+        return lastUpdateTime;
+    }
+
+    public void setLastUpdateTime(long lastUpdateTime) {
+        this.lastUpdateTime = lastUpdateTime;
+    }
+
+    public long getCount() {
+        return count;
+    }
+
+    public void increaseCount() {
+        count++;
+    }
+
+    public void clearCount() {
+        count = 0;
+    }
 }
