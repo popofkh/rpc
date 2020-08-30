@@ -30,11 +30,14 @@ public class Request {
     public static ChannelHandlerContext sendingContext = null;
     /**
      * 用于发送请求的NettyClient实例
+     * 加volatile的目的是为了防止指令重排序，如果没加volatile会发生的情况：
+     * 线程一判断instance为空，但对象创建的过程
      */
-    private static Request instance = null;
+    private static volatile Request instance = null;
 
     private Request() {}
 
+    // TODO 应该在系统初始化的时候建立连接，而不是调用的时候再创建连接，下面的逻辑每次调用都使用新的netty线程租也是不对的
     /**
      * 使用Double check保证不重复对同一个IP创建连接
      * @param addr
@@ -66,8 +69,6 @@ public class Request {
                             @Override
                             public void operationComplete(ChannelFuture channelFuture) throws Exception {
                                 System.out.println("connect server " + addr + " completed...");
-//                            Center.IPChannelMap.get(addr).setChannel(channelFuture.channel());
-//                            Center.IPChannelMap.get(addr).setGroup(group);
                             }
                         });
                         // 缓存channel
@@ -110,7 +111,7 @@ public class Request {
             ByteBuf requsetBuf = Unpooled.copiedBuffer(requestJson, CharsetUtil.UTF_8);
             System.out.println("sending request: " + requestJson);
 
-            // 超时重传
+            // TODO 超时重传逻辑有误，应考虑方法的幂等性，非幂等的方法重试过程可能造成意想不到的错误
             int requestCnt = 0;
             while (requestCnt < 3) {
                 // TODO 等待连接建立，应该在Center中维护一个Map，应该是等待特定IP对应的channel连接建立

@@ -10,13 +10,14 @@ import org.apache.zookeeper.KeeperException;
 import org.springframework.context.ApplicationContext;
 import server.Response;
 import server.ServerConfig;
+import timer.Liveness;
 import utils.ZkClient;
 import utils.ZkUtil;
 
 import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.Timer;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReadWriteLock;
 
@@ -67,8 +68,11 @@ public class Center {
     public static Map<String, ChannelInfo> healthyChannel = new ConcurrentHashMap<>();
     // 亚健康连接
     public static Map<String, ChannelInfo> subhealthyChannel = new ConcurrentHashMap<>();
-    // 非健康连接
-    public static Map<String, ChannelInfo> unhealthyChannel = new ConcurrentHashMap<>();
+
+    /**
+     * 负责心跳线程的管理
+     */
+    public static ScheduledExecutorService heartbeatThreadPool = Executors.newScheduledThreadPool(1);
 
     /**
      * 保存客户端配置的负载均衡策略
@@ -76,6 +80,10 @@ public class Center {
     public static LoadBalance loadBalance;
 
     public static Timer timer = new Timer();
+
+    static {
+        heartbeatThreadPool.scheduleAtFixedRate(new Liveness(), 0, 15, TimeUnit.SECONDS);
+    }
 
     /**
      * 客户端启动入口，获取远程代理对象

@@ -40,6 +40,7 @@ public class ResponseHandler extends ChannelInboundHandlerAdapter {
             return;
         }
 
+        // TODO 方法的执行不应该在netty线程中完成，应该交给server-stub中的线程池执行，并通过回调函数，发送response
         // 执行目标方法，构造响应体
         Object result = InvokeService.invoke(requestEntity);
 

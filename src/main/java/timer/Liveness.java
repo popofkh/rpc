@@ -9,10 +9,8 @@ import io.netty.buffer.Unpooled;
 import io.netty.util.CharsetUtil;
 import utils.JsonUtil;
 
-import java.util.Map;
-
 public class Liveness implements Runnable {
-    // 对缓存的channel定时发送心跳，维护三个channel map(健康、亚健康、非健康)
+    // 对缓存的channel定时发送心跳，维护2个channel map(健康、亚健康)
     @Override
     public void run() {
         // 对于首次建立的连接和healthy channel，每隔15s一次心跳包，如果出现连续三次超时(或一定时间内业务调用成功率在70%以下)，移入subhealthyChannelMap
